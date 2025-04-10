@@ -44,7 +44,7 @@ pub enum Command {
     },
     /// Current module and config
     Current,
-    /// Show current state (modules, configs, links)
+    /// Describe current state (modules, configs, links)
     Describe,
     /// Link a path to current config
     Link {
