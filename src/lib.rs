@@ -38,7 +38,7 @@ pub fn execute() -> Result<String> {
         Command::Remove { module, config } => handle_remove(&module, &config),
         Command::Select { module, config } => handle_select(&module, &config),
         Command::Current => handle_current(),
-        Command::State => handle_state(),
+        Command::Describe => handle_describe(),
         Command::Link { path } => handle_link(&path),
         Command::Unlink { path } => handle_unlink(&path),
         Command::Completions => handle_completions(),
@@ -177,7 +177,7 @@ fn handle_current() -> Result<String> {
     }
 }
 
-fn handle_state() -> Result<String> {
+fn handle_describe() -> Result<String> {
     let repository = get_current_repository()?;
     let mut result: Vec<String> = Vec::new();
 
