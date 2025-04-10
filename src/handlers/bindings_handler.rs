@@ -33,7 +33,7 @@ pub fn bind_path(version: &Version, path: &Path) -> Result<Binding> {
         internal_path: suffixed_path.to_path_buf(),
         external_path: path.to_path_buf(),
     };
-    update_bindings(version, |version_binding| {
+    update_version_bindings(version, |version_binding| {
         let mut entries = version_binding.entries.to_owned();
         entries.push(new_binding.to_owned());
         VersionBindings { entries }
@@ -48,7 +48,7 @@ pub fn unbind_path(version: &Version, path: &Path) -> Result<Binding> {
         .find(|el| el.external_path == path)
         .unwrap()
         .to_owned();
-    update_bindings(version, |version_binding| {
+    update_version_bindings(version, |version_binding| {
         let mut entries = version_binding.entries.to_owned();
         entries.retain(|binding| binding.external_path != path);
         VersionBindings { entries }
@@ -57,12 +57,12 @@ pub fn unbind_path(version: &Version, path: &Path) -> Result<Binding> {
 }
 
 pub fn unbind_all(version: &Version) -> Result<()> {
-    update_bindings(version, |_| VersionBindings {
+    update_version_bindings(version, |_| VersionBindings {
         entries: Vec::new(),
     })
 }
 
-fn update_bindings(
+pub fn update_version_bindings(
     version: &Version,
     updater: impl Fn(&VersionBindings) -> VersionBindings,
 ) -> Result<()> {

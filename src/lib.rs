@@ -1,5 +1,5 @@
 use std::{
-    fs::{self, create_dir_all},
+    fs::{self},
     path::Path,
     str::from_utf8,
 };
@@ -8,18 +8,19 @@ use anyhow::Result;
 use clap::{CommandFactory, Parser};
 use clap_complete::generate;
 use colored::Colorize;
-use common::{constants::DEFAULT_VERSION, versions_helper::get_module_path};
+use common::versions_helper::{get_module_path, get_version_from_name};
 use commons::utils::shell_util::current_shell;
 use handlers::{
-    bindings_handler::{
-        bind_path, is_path_bound, read_version_bindings, unbind_path, write_bindings,
+    bindings_handler::{bind_path, is_path_bound, read_version_bindings, unbind_path},
+    commands_handler::{
+        add_module, add_module_with_version, add_version, remove_module, remove_version,
     },
     repository_handler::get_current_repository,
     workspace_handler::{link_binding, link_version, unlink_binding, unlink_version},
 };
 use path_absolutize::Absolutize;
 use types::{
-    bindings::{Bindings, VersionBindings},
+    bindings::VersionBindings,
     cli::{Cli, Command},
     errors::ConfigsError,
 };
@@ -38,7 +39,7 @@ pub fn execute() -> Result<String> {
         Command::Remove { module, config } => handle_remove(&module, &config),
         Command::Select { module, config } => handle_select(&module, &config),
         Command::Current => handle_current(),
-        Command::Describe => handle_describe(),
+        Command::Show => handle_show(),
         Command::Link { path } => handle_link(&path),
         Command::Unlink { path } => handle_unlink(&path),
         Command::Completions => handle_completions(),
@@ -58,32 +59,35 @@ fn handle_completions() -> Result<String> {
 
 fn handle_add(module: &str, config: &Option<String>) -> Result<String> {
     let repository = get_current_repository()?;
-    let module_path = repository.root_path.join(module);
-
     let module_preexisted = repository.get_module(module).is_ok();
-    if !module_preexisted {
-        create_dir_all(module_path)?;
-        repository.add_module(module, module)?;
-        write_bindings(&repository.root_path, &Bindings::default())?;
+
+    match config {
+        Some(config) => {
+            if module_preexisted {
+                add_version(config, &repository.get_module(module).unwrap())?;
+            } else {
+                add_module_with_version(module, config)?;
+            }
+        }
+        None => {
+            if module_preexisted {
+                return Err(ConfigsError::ModuleAlreadyExists(module.to_string()).into());
+            } else {
+                add_module(module)?;
+            }
+        }
     }
 
-    if let Some(config) = config {
-        repository.get_module(module)?.add_version(config)?;
-        if !module_preexisted {
-            repository
-                .get_module(module)?
-                .remove_version(DEFAULT_VERSION)?;
-        }
-        repository.get_module(module)?.select_version(config)?;
-    };
-
     let module_str = module.bold().underline();
-    let config_str = repository
-        .get_module(module)?
-        .force_current_version()?
-        .name
-        .bold()
-        .underline();
+    let config_str = match config {
+        Some(config) => config.bold().underline(),
+        None => repository
+            .get_module(module)?
+            .force_current_version()?
+            .name
+            .bold()
+            .underline(),
+    };
 
     if module_preexisted {
         Ok(format!(
@@ -100,32 +104,18 @@ fn handle_add(module: &str, config: &Option<String>) -> Result<String> {
 
 fn handle_remove(module: &str, config: &Option<String>) -> Result<String> {
     let repository = get_current_repository()?;
-    let mut module = repository.get_module(module)?;
-
-    let module_path = repository.root_path.join(&module.directory);
+    let module = repository.get_module(module)?;
 
     if let Some(config) = config {
-        if let Some(current_version) = &module.current_version {
-            if &current_version.name == config {
-                unlink_version(current_version)?;
-            }
-        }
-
-        module.remove_version(config)?;
-
+        let version = get_version_from_name(config, &module);
+        remove_version(&version)?;
         Ok(format!(
             "Removed config {} from module {}.",
             config.bold().underline(),
             module.name.bold().underline()
         ))
     } else {
-        if let Some(current_version) = &module.current_version {
-            unlink_version(current_version)?;
-        }
-
-        repository.remove_module(&module)?;
-        fs::remove_dir_all(&module_path)?;
-
+        remove_module(&module)?;
         Ok(format!(
             "Removed module {}.",
             module.name.bold().underline()
@@ -177,7 +167,7 @@ fn handle_current() -> Result<String> {
     }
 }
 
-fn handle_describe() -> Result<String> {
+fn handle_show() -> Result<String> {
     let repository = get_current_repository()?;
     let mut result: Vec<String> = Vec::new();
 
@@ -227,7 +217,6 @@ fn handle_link(path: &Path) -> Result<String> {
 
     let binding = bind_path(&current_version, &path)?;
     link_binding(&binding, &get_module_path(&current_version))?;
-
     Ok(format!("Linked path: {}", &path.to_str().unwrap()))
 }
 

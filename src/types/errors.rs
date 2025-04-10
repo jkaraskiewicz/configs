@@ -4,6 +4,7 @@ use std::{error::Error, fmt, path::PathBuf};
 pub enum ConfigsError {
     ConfigNotFound,
     ModuleNotSelected,
+    ModuleAlreadyExists(String),
     PathAlreadyBound(PathBuf),
     PathNotBound(PathBuf),
     IncorrectLink(PathBuf),
@@ -15,6 +16,7 @@ impl fmt::Display for ConfigsError {
         match self {
             ConfigsError::ConfigNotFound => write!(f, "Config file not found."),
             ConfigsError::ModuleNotSelected => write!(f, "No module is selected."),
+            ConfigsError::ModuleAlreadyExists(name) => write!(f, "Module {} already exists.", name),
             ConfigsError::PathAlreadyBound(path) => {
                 write!(
                     f,
