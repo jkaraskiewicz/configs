@@ -207,7 +207,7 @@ dependencies = [
 
 [[package]]
 name = "configs"
-version = "0.1.5"
+version = "0.1.6"
 dependencies = [
  "anyhow",
  "clap",
@@ -763,10 +763,9 @@ checksum = "0b928f33d975fc6ad9f86c8f283853ad26bdd5b10b7f1542aa2fa15e2289105a"
 
 [[package]]
 name = "versions"
-version = "0.2.5"
-source = "git+https://github.com/jkaraskiewicz/versions.git#a5d093f3794b421d847575b508d3e90d024aaf90"
+version = "0.2.6"
+source = "git+https://github.com/jkaraskiewicz/versions.git#e63a35a0af367a61daa2acfdf016c35e72e1cae5"
 dependencies = [
- "anyhow",
  "clap",
  "clap_complete",
  "colored",

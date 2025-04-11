@@ -3,7 +3,7 @@ use std::path::PathBuf;
 use clap::{Parser, Subcommand};
 
 #[derive(Parser, Debug)]
-#[command(author, version, about = "Manage tool configs easily")]
+#[command(author, version, about = "Manage configs easily")]
 pub struct Cli {
     /// Command
     #[clap(subcommand)]
