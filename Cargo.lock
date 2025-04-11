@@ -196,18 +196,6 @@ dependencies = [
 [[package]]
 name = "commons"
 version = "0.2.5"
-source = "git+ssh://git@github.com/jkaraskiewicz/commons.git#bb7b251f39697e43c5467f9aeec09c3113acd836"
-dependencies = [
- "chrono",
- "clap_complete",
- "dircpy",
- "sha2",
- "thiserror",
-]
-
-[[package]]
-name = "commons"
-version = "0.2.5"
 source = "git+https://github.com/jkaraskiewicz/commons.git#bb7b251f39697e43c5467f9aeec09c3113acd836"
 dependencies = [
  "chrono",
@@ -225,7 +213,7 @@ dependencies = [
  "clap",
  "clap_complete",
  "colored",
- "commons 0.2.5 (git+ssh://git@github.com/jkaraskiewicz/commons.git)",
+ "commons",
  "itertools",
  "path-absolutize",
  "serde",
@@ -776,13 +764,13 @@ checksum = "0b928f33d975fc6ad9f86c8f283853ad26bdd5b10b7f1542aa2fa15e2289105a"
 [[package]]
 name = "versions"
 version = "0.2.5"
-source = "git+ssh://git@github.com/jkaraskiewicz/versions.git#a5d093f3794b421d847575b508d3e90d024aaf90"
+source = "git+https://github.com/jkaraskiewicz/versions.git#a5d093f3794b421d847575b508d3e90d024aaf90"
 dependencies = [
  "anyhow",
  "clap",
  "clap_complete",
  "colored",
- "commons 0.2.5 (git+https://github.com/jkaraskiewicz/commons.git)",
+ "commons",
  "diffy",
  "flate2",
  "serde",

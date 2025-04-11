@@ -4,8 +4,8 @@ version = "0.1.5"
 edition = "2021"
 
 [dependencies]
-commons = { git = "ssh://git@github.com/jkaraskiewicz/commons.git", version = "0.2.5" }
-versions = { git = "ssh://git@github.com/jkaraskiewicz/versions.git", version = "0.2.5" }
+commons = { git = "https://github.com/jkaraskiewicz/commons.git", version = "0.2.5" }
+versions = { git = "https://github.com/jkaraskiewicz/versions.git", version = "0.2.5" }
 clap = { version = "4.5.29", features = ["derive", "string"] }
 serde = { version = "1.0.217", features = ["derive"] }
 serde_yml = "0.0.12"
