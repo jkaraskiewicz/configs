@@ -8,6 +8,6 @@ fn main() {
         std::process::exit(1);
     });
     if !output.is_empty() {
-        println!("{}", output);
+        println!("{output}");
     }
 }
