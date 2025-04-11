@@ -20,7 +20,7 @@ impl fmt::Display for ConfigsError {
             ConfigsError::PathAlreadyBound(path) => {
                 write!(
                     f,
-                    "Path {} or its ancestor is already bound.",
+                    "Path {} or its ancestor/descendant is already bound.",
                     path.to_str().unwrap()
                 )
             }

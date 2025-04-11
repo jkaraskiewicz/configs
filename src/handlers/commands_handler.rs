@@ -19,7 +19,6 @@ pub fn add_version(name: &str, module: &Module) -> Result<Module> {
 
     if let Some(current_version) = current_version {
         current_version_bindings = read_version_bindings(current_version)?;
-        unlink_version(current_version)?;
     }
 
     let new_version = module.add_version(name)?;

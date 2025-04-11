@@ -19,7 +19,7 @@ pub fn is_path_bound(version: &Version, path: &Path) -> Result<bool> {
     let version_bindings = read_version_bindings(version)?;
     let contains = version_bindings
         .entries
-        .contains(|el| el.external_path.starts_with(path));
+        .contains(|el| el.external_path.starts_with(path) || path.starts_with(&el.external_path));
     Ok(contains)
 }
 

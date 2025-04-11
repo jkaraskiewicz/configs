@@ -29,7 +29,7 @@ pub fn link_version(version: &Version, diff_bindings: Option<VersionBindings>) -
     let removed_bindings = diff_bindings
         .entries
         .iter()
-        .filter(|el| bindings.contains(el))
+        .filter(|el| !bindings.contains(el))
         .collect_vec();
 
     for binding in removed_bindings {
@@ -91,6 +91,7 @@ pub fn link_binding(binding: &Binding, module_dir_path: &Path) -> Result<()> {
 pub fn unlink_binding(binding: &Binding, module_dir_path: &Path) -> Result<()> {
     let external_path = binding.external_path.to_path_buf();
     let internal_path = module_dir_path.join(&binding.internal_path);
+
     let is_link_correct = external_path.exists()
         && internal_path.exists()
         && external_path.is_symlink()

@@ -1,3 +1,5 @@
+#![warn(clippy::pedantic)]
+
 use configs::execute;
 
 fn main() {

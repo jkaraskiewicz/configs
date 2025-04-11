@@ -184,12 +184,12 @@ fn handle_show() -> Result<String> {
         for version in &module.versions {
             if let Some(current_version) = &module.current_version {
                 if current_version.name == version.name {
-                    result.push(format!("  * {}", version.name.bold().underline()));
+                    result.push(format!("  - {}", version.name.bold().underline()));
                 } else {
-                    result.push(format!("  * {}", version.name));
+                    result.push(format!("  - {}", version.name.underline()));
                 }
             } else {
-                result.push(format!("  * {}", version.name));
+                result.push(format!("  - {}", version.name.underline()));
             };
             let bindings = read_version_bindings(version)?;
             for binding in bindings.entries {
