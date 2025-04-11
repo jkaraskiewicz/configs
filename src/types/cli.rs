@@ -42,6 +42,8 @@ pub enum Command {
         #[arg()]
         config: String,
     },
+    /// Deselects current module/config
+    Deselect,
     /// Current module and config
     Current,
     /// Show current status (modules, configs, links)

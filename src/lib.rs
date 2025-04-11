@@ -38,6 +38,7 @@ pub fn execute() -> Result<String> {
         Command::Add { module, config } => handle_add(&module, &config),
         Command::Remove { module, config } => handle_remove(&module, &config),
         Command::Select { module, config } => handle_select(&module, &config),
+        Command::Deselect => handle_deselect(),
         Command::Current => handle_current(),
         Command::Show => handle_show(),
         Command::Link { path } => handle_link(&path),
@@ -127,7 +128,7 @@ fn handle_select(module: &str, config: &str) -> Result<String> {
     let repository = get_current_repository()?;
 
     let mut repo_module = repository.get_module(module)?;
-    repo_module = repository.select_module(&repo_module)?;
+    repo_module = repository.select_module(&Some(repo_module))?.unwrap();
 
     let mut diff_bindings = VersionBindings::default();
     if let Some(current_version) = &repo_module.current_version {
@@ -144,6 +145,24 @@ fn handle_select(module: &str, config: &str) -> Result<String> {
         module.bold().underline(),
         config.bold().underline()
     ))
+}
+
+fn handle_deselect() -> Result<String> {
+    let repository = get_current_repository()?;
+    if let Some(current_module) = &repository.current_module()? {
+        if let Some(current_version) = &current_module.current_version {
+            let mut new_module = current_module.to_owned();
+            new_module.deselect_version()?;
+            repository.select_module(&None)?;
+
+            unlink_version(current_version)?;
+
+            let dir_path = repository.root_path.join(&current_module.directory);
+            fs::remove_dir_all(&dir_path)?;
+            fs::create_dir_all(&dir_path)?;
+        }
+    }
+    Ok("Deselected current module and config.".to_string())
 }
 
 fn handle_current() -> Result<String> {
