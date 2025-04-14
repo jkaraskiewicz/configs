@@ -8,7 +8,10 @@ use anyhow::Result;
 use clap::{CommandFactory, Parser};
 use clap_complete::generate;
 use colored::Colorize;
-use common::versions_helper::{get_module_path, get_version_from_name};
+use common::{
+    colors_helper::Colorized,
+    versions_helper::{get_module_path, get_version_from_name},
+};
 use commons::utils::shell_util::current_shell;
 use handlers::{
     bindings_handler::{bind_path, is_path_bound, read_version_bindings, unbind_path},
@@ -200,22 +203,31 @@ fn handle_show() -> Result<String> {
         } else {
             result.push(module.name.to_string());
         }
-        for version in &module.versions {
+        for (index, version) in module.versions.iter().cloned().enumerate() {
+            let special_char = if index == 0 {
+                "└──".dimmed()
+            } else {
+                "───".dimmed()
+            };
             if let Some(current_version) = &module.current_version {
                 if current_version.name == version.name {
-                    result.push(format!("  - {}", version.name.bold().underline()));
+                    result.push(format!(
+                        "{} {}",
+                        special_char,
+                        version.name.bold().underline()
+                    ));
                 } else {
-                    result.push(format!("  - {}", version.name.underline()));
+                    result.push(format!("{} {}", special_char, version.name.underline()));
                 }
             } else {
-                result.push(format!("  - {}", version.name.underline()));
+                result.push(format!("{} {}", special_char, version.name.underline()));
             };
-            let bindings = read_version_bindings(version)?;
+            let bindings = read_version_bindings(&version)?;
             for binding in bindings.entries {
                 result.push(format!(
                     "    {} -> {}",
-                    binding.internal_path.to_str().unwrap(),
-                    binding.external_path.to_str().unwrap()
+                    binding.internal_path.colorize(true),
+                    binding.external_path.colorize(false)
                 ));
             }
         }
